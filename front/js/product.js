@@ -1,18 +1,17 @@
 //EXTRACTS _id FROM THE URL (ALL SYMBOLS AFTER THE = SYMBOL IN URL)
-const urlId = window.location.href.substring(window.location.href.lastIndexOf("=") + 1);
+const id = window.location.href.substring(window.location.href.lastIndexOf("=") + 1);
 //CHECKS _id
-console.log(urlId);
+console.log(id);
 //FETCHES THE DATA FOR THE RELATED _id IN details
-const details = fetch(`http://localhost:3000/api/products/${urlId}`)
+const details = fetch(`http://localhost:3000/api/products/${id}`)
     .then((resp) => resp.json())
     .then((details) => {
         //TESTS FOR CHECKING DATAS
         console.log(details.price, details.name);
-        //SETS PAGE'S TITLE
+        //SETS PAGE'S TITLE TO CURRENT ARTICLE'S NAME
         document.title = details.name;
         //GETS HTML COLLECTION FROM item__img CLASS AND DEFINES A VARIABLE FOR IMAGE
         const productImage = document.getElementsByClassName("item__img")[0];
-        console.log(productImage);
         //CREATES img CHILD AND SETS src AND alt ATTRIBUTES
         const image = document.createElement("img");
         image.setAttribute("src", `${details.imageUrl}`);
@@ -34,17 +33,36 @@ const details = fetch(`http://localhost:3000/api/products/${urlId}`)
             let productColors = document.createElement("option");
             document.querySelector("#colors").appendChild(productColors);
             productColors.value = colors;
-            productColors.innerHTML = colors;
+            productColors.innerText = colors;
         }
     })
     //RETURNS ALERT IF API URL IS DOWN
     .catch((error) => {
         console.error(error);
-        alert("Erreur technique");
+        alert('Erreur technique');
     });
-    //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY
-    const colorChosen = document.querySelector("#colors");
-    const quantityChosen = document.querySelector("#quantity");
-    function addToCart{
 
+const button = document.getElementById("addToCart");
+button.addEventListener("click", ()=>{
+    //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY
+    const colorChosen = document.querySelector("#colors").value;
+    const quantityChosen = document.querySelector("#quantity").value;
+    
+    if (quantityChosen > 0 && colorChosen != ""){
+
+        let newItem = { color: colorChosen, qty: quantityChosen, model: id };
+        
+        let cart = JSON.parse(localStorage.getItem("cart"));
+        
+        if (cart === null) {
+            cart = [];
+        }
+        cart.push(newItem);
+        
+        localStorage.setItem("cart", JSON.stringify(cart));
+        console.log(localStorage);
     }
+        else if (colorChosen === ""){
+            alert('Veuillez choisir une couleur.')
+        }
+});
