@@ -2,7 +2,7 @@
 const id = window.location.href.substring(window.location.href.lastIndexOf("=") + 1);
 //CHECKS _id
 console.log(id);
-//FETCHES THE DATA FOR THE RELATED _id IN details
+//FETCHES THE DATA FOR THE RELATED id IN details
 const details = fetch(`http://localhost:3000/api/products/${id}`)
     .then((resp) => resp.json())
     .then((details) => {
@@ -39,30 +39,30 @@ const details = fetch(`http://localhost:3000/api/products/${id}`)
     //RETURNS ALERT IF API URL IS DOWN
     .catch((error) => {
         console.error(error);
-        alert('Erreur technique');
+        alert("Erreur technique");
     });
 
 const button = document.getElementById("addToCart");
-button.addEventListener("click", ()=>{
+button.addEventListener("click", () => {
     //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY
     const colorChosen = document.querySelector("#colors").value;
     const quantityChosen = document.querySelector("#quantity").value;
-    
-    if (quantityChosen > 0 && colorChosen != ""){
-
+    //CHECKS IF QTY IS NOT 0 AND IF COLOR IS SET
+    if (quantityChosen > 0 && colorChosen != "") {
+        //SETS NEEDED DATAS FOR ADDING A NEW ITEM TO THE CART
         let newItem = { color: colorChosen, qty: quantityChosen, model: id };
-        
+        //CHECKS CART CONTENT
         let cart = JSON.parse(localStorage.getItem("cart"));
-        
+        //IF CART DOESN'T EXISTS, CREATES AN ARRAY
         if (cart === null) {
             cart = [];
         }
         cart.push(newItem);
-        
+
         localStorage.setItem("cart", JSON.stringify(cart));
         console.log(localStorage);
+        //IF NO COLOR SELECTED, ALERT
+    } else if (colorChosen === "") {
+        alert("Veuillez choisir une couleur.");
     }
-        else if (colorChosen === ""){
-            alert('Veuillez choisir une couleur.')
-        }
 });
