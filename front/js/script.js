@@ -6,6 +6,7 @@ fetch("http://localhost:3000/api/products")
         console.log(kanaps);
         //INIT COUNTER = i++
         for (let value of kanaps) {
+            //SETS MAIN ELEMENT'S POSITION IN DOM
             const productCard = document.getElementById("items");
             // CREATES a ELEMENT, GETS href ATTRIBUTE, _id VALUE AND DEFINES AS productCard CHILD
             let link = document.createElement("a");

@@ -44,25 +44,43 @@ const details = fetch(`http://localhost:3000/api/products/${id}`)
 
 const button = document.getElementById("addToCart");
 button.addEventListener("click", () => {
-    //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY
+    //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY, NAME AND UNIQUEID
     const colorChosen = document.querySelector("#colors").value;
-    const quantityChosen = document.querySelector("#quantity").value;
+    const quantityChosen = parseInt(document.querySelector("#quantity").value);
+    const name = document.title;
+    const uniqueId = colorChosen.concat("", id);
+
     //CHECKS IF QTY IS NOT 0 AND IF COLOR IS SET
     if (quantityChosen > 0 && colorChosen != "") {
         //SETS NEEDED DATAS FOR ADDING A NEW ITEM TO THE CART
-        let newItem = { color: colorChosen, qty: quantityChosen, model: id };
+        let newItem = { color: colorChosen, qty: quantityChosen, model: id, uId: uniqueId };
         //CHECKS CART CONTENT
         let cart = JSON.parse(localStorage.getItem("cart"));
+
         //IF CART DOESN'T EXISTS, CREATES AN ARRAY
         if (cart === null) {
             cart = [];
         }
-        cart.push(newItem);
+
+        let itemExist = cart.find((item) => item.uId === newItem.uId);
+        if (itemExist === null || itemExist === undefined) {
+            cart.push(newItem);
+        } else {
+            itemExist.qty += newItem.qty;
+        }
 
         localStorage.setItem("cart", JSON.stringify(cart));
-        console.log(localStorage);
-        //IF NO COLOR SELECTED, ALERT
-    } else if (colorChosen === "") {
+        console.table(cart);
+
+        if (quantityChosen == 1) {
+            alert(`${quantityChosen} ${name} ${colorChosen} ajouté au panier.`);
+        } else {
+            alert(`${quantityChosen} ${name} ${colorChosen} ajoutés au panier.`);
+        }
+    }
+
+    //IF NO COLOR SELECTED, ALERT
+    else if (colorChosen === "") {
         alert("Veuillez choisir une couleur.");
     }
 });

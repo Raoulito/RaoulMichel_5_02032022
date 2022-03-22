@@ -1,26 +1,32 @@
+//GETS DATA FROM LOCALSTORAGE
 let items = JSON.parse(localStorage.getItem("cart"));
 console.table(items);
-
+//INIT COUNTER = i++
 for (let item of items) {
+    //FETCHES DATAS FROM IDs IN BASKET
     fetch(`http://localhost:3000/api/products/${item.model}`)
         .then((resp) => resp.json())
+        //STORES DATAS IN details VARIABLE
         .then((details) => {
             console.log(details);
+            //SETS MAIN ELEMENT'S POSITION IN DOM
             const productView = document.getElementById("cart__items");
-
+            // CREATES article ELEMENT, GETS CLASS AND ATTRIBUTES AND DEFINES AS productView CHILD
             let article = document.createElement("article");
             article.classList.add("cart__item");
-            article.setAttribute("data-id", `${item.model}`); // LOCAL STORAGE
-            article.setAttribute("data-color", `${item.color}`); // LOCALSTORAGE
+            //FETCHES FROM LOCALSTORAGE
+            article.setAttribute("data-id", `${item.model}`);
+            article.setAttribute("data-color", `${item.color}`);
             productView.appendChild(article);
-
+            //CREATES div, ADDS CLASS AND DEFINES AS article CHILD
             let divImage = document.createElement("div");
             divImage.classList.add("cart__item__img");
             article.appendChild(divImage);
-
+            //CREATES image, SETS src AND alt ATTRIBUTES AND DEFINES AS divImage CHILD
             let image = document.createElement("img");
-            image.setAttribute("src", `${details.imageUrl}`); // API
-            image.setAttribute("alt", `${details.altTxt}`); // API
+            // FETCHES FROM API
+            image.setAttribute("src", `${details.imageUrl}`);
+            image.setAttribute("alt", `${details.altTxt}`);
             divImage.appendChild(image);
 
             let divContent = document.createElement("div");
@@ -40,7 +46,7 @@ for (let item of items) {
             divDescription.appendChild(productColor);
 
             let productPrice = document.createElement("p");
-            productPrice.innerText = `${details.price} €`; //API
+            productPrice.innerText = `${details.price}€`; //API
             divDescription.appendChild(productPrice);
 
             let divSettings = document.createElement("div");
@@ -61,7 +67,7 @@ for (let item of items) {
             qtySelect.setAttribute("name", "itemQuantity");
             qtySelect.setAttribute("min", "1");
             qtySelect.setAttribute("max", "100");
-            qtySelect.setAttribute("value", `${item.qty}`); //LOCALSTORAGE
+            qtySelect.setAttribute("value", `${item.qty}`); // FROM LOCALSTORAGE
             quantity.appendChild(qtySelect);
 
             let divDelete = document.createElement("div");
@@ -74,3 +80,4 @@ for (let item of items) {
             divDelete.appendChild(deleteButton);
         });
 }
+
