@@ -12,7 +12,7 @@ for (let item of items) {
         .then((resp) => resp.json())
         //STORES DATAS IN details VARIABLE
         .then((details) => {
-            console.log(details._id);
+            console.log(details);
             //SETS MAIN ELEMENT'S POSITION IN DOM
             const productView = document.getElementById("cart__items");
             // CREATES article ELEMENT, GETS CLASS AND ATTRIBUTES AND DEFINES AS productView CHILD
@@ -83,11 +83,73 @@ for (let item of items) {
             deleteButton.innerText = "Supprimer";
             divDelete.appendChild(deleteButton);
             //SUM OF ALL ARTICLES
-            totalQuantity += item.qty;
+            totalQuantity += parseInt(item.qty);
             document.getElementById("totalQuantity").textContent = `${totalQuantity}`;
             //TOTAL PRICE
             totalPrice += item.qty * details.price;
             document.getElementById("totalPrice").textContent = `${totalPrice}`;
+        })
+        .then(() => {
+            let quantityInputs = document.querySelectorAll(".itemQuantity");
+            quantityInputs.forEach((input) => {
+                input.addEventListener("change", () => {
+                    let product = input.parentElement.parentElement.parentElement.parentElement.parentElement;
+                    let productId = product.getAttribute("data-id");
+                    let cart = items;
+                    cart.forEach((savedProduct) => {
+                        if (savedProduct.model === productId) {
+                            savedProduct.qty = input.value;
+                            localStorage.setItem("cart", JSON.stringify(cart));
+                        }
+                    })
+                    updateTotalPrice()
+                })
+            })
+        })
+        .then(() => {
+            let deleteBtns = document.querySelectorAll(".deleteItem");
+            deleteBtns.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    let product = btn.parentElement.parentElement.parentElement.parentElement;
+                    product.remove();
+                    let productId = product.getAttribute("data-id");
+                    let cart = items;
+                    cart.forEach((savedProduct) => {
+                        if (savedProduct.model === productId) {
+                            var filtered = cart.filter(function (value, index, arr) {
+                                return value != savedProduct;
+                            });
+                            cart = filtered;
+                            localStorage.setItem("cart", JSON.stringify(cart));
+                        }
+                    })
+                    updateTotalPrice()
+                })
+            })
         });
-
 }
+
+
+function updateTotalPrice() {
+    let totalPrice = 0;
+    let totalQuantity = 0;
+    // let cart = items;
+    // cart.forEach((savedProduct) => {
+    //     totalQuantity += parseInt(savedProduct.qty);
+    //     totalPrice += savedProduct.qty * savedProduct.price;
+    // })
+    let allCartItems = document.querySelectorAll(".cart__item");
+    allCartItems.forEach((cartItem)=>{
+        let productQty = Number(cartItem.children[1].children[1].children[0].firstElementChild.firstElementChild.value);
+        let productPrice = Number(cartItem.children[1].firstElementChild.lastElementChild.innerHTML.slice(0,-1))
+        console.log(productQty);
+        console.log(productPrice);
+        totalQuantity += productQty;
+        let productTotalPrice = productPrice * productQty; 
+        totalPrice += productTotalPrice;
+    })
+    document.getElementById("totalQuantity").textContent = `${totalQuantity}`;
+    document.getElementById("totalPrice").textContent = `${totalPrice}`;
+}
+
+
