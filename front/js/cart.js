@@ -204,7 +204,7 @@ document.getElementById("order").addEventListener("click", (event) => {
         cart.forEach((item) => {
             products.push(item.model);
         });
-        document.cookie = JSON.stringify({
+        let finalOrder = {
             contact: {
                 firstName,
                 lastName,
@@ -213,7 +213,9 @@ document.getElementById("order").addEventListener("click", (event) => {
                 email,
             },
             products,
-        });
+        };
+        localStorage.setItem("contact", JSON.stringify(finalOrder));
+        console.table(finalOrder);
         window.location.href = "./confirmation.html";
     }
 });
