@@ -1,7 +1,7 @@
-//GETS DATA FROM LOCALSTORAGE
+//Gets datas from local storage
 let items = JSON.parse(localStorage.getItem("cart"));
 console.table(items);
-//INIT COUNTER = i++
+//Initiates the counter
 for (let item of items) {
     //FETCHES DATAS FROM IDs IN BASKET
     fetch(`http://localhost:3000/api/products/${item.model}`)
@@ -80,7 +80,7 @@ for (let item of items) {
             divDelete.appendChild(deleteButton);
 
             updateTotalPrice();
-
+            //Adjusts quantity
             qtySelect.addEventListener("change", (event) => {
                 let product = event.target.parentElement.parentElement.parentElement.parentElement.parentElement;
                 let productId = product.getAttribute("data-id");
@@ -93,7 +93,7 @@ for (let item of items) {
                 });
                 updateTotalPrice();
             });
-
+            //Deletes item from cart
             deleteButton.addEventListener("click", (event) => {
                 let product = event.target.parentElement.parentElement.parentElement.parentElement;
                 product.remove();
@@ -113,6 +113,7 @@ for (let item of items) {
         });
 }
 
+//Calculates total price
 function updateTotalPrice() {
     let totalPrice = 0;
     let totalQuantity = 0;
@@ -149,12 +150,12 @@ function isLetterOnly() {
             lastName.nextElementSibling.textContent = "Veuillez entrer votre nom.";
         } else if (!lastName.value.match(list)) {
             lastName.nextElementSibling.textContent = "Veuillez entrer un nom valide.";
-        }     
+        }
         if (city.value === "") {
             city.nextElementSibling.textContent = "Veuillez entrer votre ville.";
         } else if (!city.value.match(list)) {
             city.nextElementSibling.textContent = "Veuillez entrer une ville valide.";
-        } 
+        }
     }
 }
 
@@ -189,7 +190,6 @@ function isEmailAddress() {
     }
 }
 
-
 //onclick on "Commander", stores in a cookie firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
 document.getElementById("order").addEventListener("click", (event) => {
     event.preventDefault();
@@ -205,12 +205,14 @@ document.getElementById("order").addEventListener("click", (event) => {
             products.push(item.model);
         });
         document.cookie = JSON.stringify({
-            firstName: firstName,
-            lastName: lastName,
-            address: address,
-            city: city,
-            email: email,
-            products: products,
+            contact: {
+                firstName,
+                lastName,
+                address,
+                city,
+                email,
+            },
+            products,
         });
         window.location.href = "./confirmation.html";
     }
