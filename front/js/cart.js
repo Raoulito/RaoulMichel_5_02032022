@@ -1,7 +1,3 @@
-//VARIABLE FOR COUNTING TOTAL ITEMS IN CART
-let totalQuantity = 0;
-//VARIABLE FOR COUNTING TOTAL PRICE
-let totalPrice = 0;
 //GETS DATA FROM LOCALSTORAGE
 let items = JSON.parse(localStorage.getItem("cart"));
 console.table(items);
@@ -82,74 +78,140 @@ for (let item of items) {
             deleteButton.classList.add("deleteItem");
             deleteButton.innerText = "Supprimer";
             divDelete.appendChild(deleteButton);
-            //SUM OF ALL ARTICLES
-            totalQuantity += parseInt(item.qty);
-            document.getElementById("totalQuantity").textContent = `${totalQuantity}`;
-            //TOTAL PRICE
-            totalPrice += item.qty * details.price;
-            document.getElementById("totalPrice").textContent = `${totalPrice}`;
-        })
-        .then(() => {
-            let quantityInputs = document.querySelectorAll(".itemQuantity");
-            quantityInputs.forEach((input) => {
-                input.addEventListener("change", () => {
-                    let product = input.parentElement.parentElement.parentElement.parentElement.parentElement;
-                    let productId = product.getAttribute("data-id");
-                    let cart = items;
-                    cart.forEach((savedProduct) => {
-                        if (savedProduct.model === productId) {
-                            savedProduct.qty = input.value;
-                            localStorage.setItem("cart", JSON.stringify(cart));
-                        }
-                    })
-                    updateTotalPrice()
-                })
-            })
-        })
-        .then(() => {
-            let deleteBtns = document.querySelectorAll(".deleteItem");
-            deleteBtns.forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    let product = btn.parentElement.parentElement.parentElement.parentElement;
-                    product.remove();
-                    let productId = product.getAttribute("data-id");
-                    let cart = items;
-                    cart.forEach((savedProduct) => {
-                        if (savedProduct.model === productId) {
-                            var filtered = cart.filter(function (value, index, arr) {
-                                return value != savedProduct;
-                            });
-                            cart = filtered;
-                            localStorage.setItem("cart", JSON.stringify(cart));
-                        }
-                    })
-                    updateTotalPrice()
-                })
-            })
+
+            updateTotalPrice();
+
+            qtySelect.addEventListener("change", (event) => {
+                let product = event.target.parentElement.parentElement.parentElement.parentElement.parentElement;
+                let productId = product.getAttribute("data-id");
+                let cart = items;
+                cart.forEach((savedProduct) => {
+                    if (savedProduct.model === productId) {
+                        savedProduct.qty = event.target.value;
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                    }
+                });
+                updateTotalPrice();
+            });
+
+            deleteButton.addEventListener("click", (event) => {
+                let product = event.target.parentElement.parentElement.parentElement.parentElement;
+                product.remove();
+                let productId = product.getAttribute("data-id");
+                let cart = items;
+                cart.forEach((savedProduct) => {
+                    if (savedProduct.model === productId) {
+                        var filtered = cart.filter(function (value) {
+                            return value != savedProduct;
+                        });
+                        cart = filtered;
+                        localStorage.setItem("cart", JSON.stringify(cart));
+                    }
+                });
+                updateTotalPrice();
+            });
         });
 }
-
 
 function updateTotalPrice() {
     let totalPrice = 0;
     let totalQuantity = 0;
-    // let cart = items;
-    // cart.forEach((savedProduct) => {
-    //     totalQuantity += parseInt(savedProduct.qty);
-    //     totalPrice += savedProduct.qty * savedProduct.price;
-    // })
     let allCartItems = document.querySelectorAll(".cart__item");
-    allCartItems.forEach((cartItem)=>{
+    allCartItems.forEach((cartItem) => {
         let productQty = Number(cartItem.children[1].children[1].children[0].firstElementChild.firstElementChild.value);
-        let productPrice = Number(cartItem.children[1].firstElementChild.lastElementChild.innerHTML.slice(0,-1))
+        let productPrice = Number(cartItem.children[1].firstElementChild.lastElementChild.innerHTML.slice(0, -1));
         console.log(productQty);
         console.log(productPrice);
         totalQuantity += productQty;
-        let productTotalPrice = productPrice * productQty; 
+        let productTotalPrice = productPrice * productQty;
         totalPrice += productTotalPrice;
-    })
+    });
     document.getElementById("totalQuantity").textContent = `${totalQuantity}`;
     document.getElementById("totalPrice").textContent = `${totalPrice}`;
 }
 
+//Checks if lastName and firstName and city inputs are letters only and if they are not empty
+function isLetterOnly() {
+    let firstName = document.getElementById("firstName");
+    let lastName = document.getElementById("lastName");
+    let city = document.getElementById("city");
+    let list = /^[a-zA-Z]+$/;
+    if (firstName.value.match(list) && lastName.value.match(list) && city.value.match(list) && firstName.value !== "" && lastName.value !== "" && city.value !== "") {
+        return true;
+    } else {
+        //if fields have an error, it will display an error message below the specific field
+        if (firstName.value === "") {
+            firstName.nextElementSibling.textContent = "Veuillez entrer votre prénom.";
+        } else if (!firstName.value.match(list)) {
+            firstName.nextElementSibling.textContent = "Veuillez entrer un prénom valide.";
+        }
+        if (lastName.value === "") {
+            lastName.nextElementSibling.textContent = "Veuillez entrer votre nom.";
+        } else if (!lastName.value.match(list)) {
+            lastName.nextElementSibling.textContent = "Veuillez entrer un nom valide.";
+        }     
+        if (city.value === "") {
+            city.nextElementSibling.textContent = "Veuillez entrer votre ville.";
+        } else if (!city.value.match(list)) {
+            city.nextElementSibling.textContent = "Veuillez entrer une ville valide.";
+        } 
+    }
+}
 
+//Checks if address is only letters and numbers and if it is not empty
+function isPostalAddress() {
+    let address = document.getElementById("address");
+    let list = /^[a-zA-Z0-9 ]+$/;
+    if (address.value.match(list) && address.value !== "") {
+        return true;
+    } else {
+        //if fields have an error, it will display an error message below the specific field
+        if (address.value === "") {
+            address.nextElementSibling.textContent = "Veuillez entrer votre adresse.";
+        } else if (!address.value.match(list)) {
+            address.nextElementSibling.textContent = "Veuillez entrer une adresse valide.";
+        }
+    }
+}
+
+//Checks if email is valid and if it is not empty
+function isEmailAddress() {
+    let eMail = document.getElementById("email");
+    let list = /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/;
+    if (eMail.value.match(list) && eMail.value !== "") {
+        return true;
+    } else {
+        if (eMail.value === "") {
+            eMail.nextElementSibling.textContent = "Veuillez entrer votre email";
+        } else if (!eMail.value.match(list)) {
+            eMail.nextElementSibling.textContent = "Veuillez entrer un email valide";
+        }
+    }
+}
+
+
+//onclick on "Commander", stores in a cookie firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
+document.getElementById("order").addEventListener("click", (event) => {
+    event.preventDefault();
+    if (isLetterOnly() && isEmailAddress() && isPostalAddress()) {
+        let firstName = document.getElementById("firstName").value;
+        let lastName = document.getElementById("lastName").value;
+        let address = document.getElementById("address").value;
+        let city = document.getElementById("city").value;
+        let email = document.getElementById("email").value;
+        let cart = items;
+        let products = [];
+        cart.forEach((item) => {
+            products.push(item.model);
+        });
+        document.cookie = JSON.stringify({
+            firstName: firstName,
+            lastName: lastName,
+            address: address,
+            city: city,
+            email: email,
+            products: products,
+        });
+        window.location.href = "./confirmation.html";
+    }
+});
