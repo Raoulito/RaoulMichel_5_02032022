@@ -108,6 +108,7 @@ for (let item of items) {
                         localStorage.setItem("cart", JSON.stringify(cart));
                     }
                 });
+
                 updateTotalPrice();
             });
         });
@@ -131,91 +132,55 @@ function updateTotalPrice() {
     document.getElementById("totalPrice").textContent = `${totalPrice}`;
 }
 
+function checkInputs(input, regex, info, info2) {
+    if (input.value.match(regex) && input.value !== "") {
+        return true;
+    } 
+        //if fields have an error or empty, it will display an error message below the specific field
+        if (input.value === "") {
+            input.nextElementSibling.textContent = `Veuillez entrer votre ${info}.`;
+        } else if (!input.value.match(regex)) {
+            input.nextElementSibling.textContent = `Veuillez entrer ${info2} valide.`;
+        }
+        return false
+}
+
 //Checks if lastName and firstName and city inputs are letters only and if they are not empty
-function isLetterOnly() {
-    let firstName = document.getElementById("firstName");
-    let lastName = document.getElementById("lastName");
-    let city = document.getElementById("city");
-    let list = /^[a-zA-Z]+$/;
-    if (firstName.value.match(list) && lastName.value.match(list) && city.value.match(list) && firstName.value !== "" && lastName.value !== "" && city.value !== "") {
-        return true;
-    } else {
-        //if fields have an error, it will display an error message below the specific field
-        if (firstName.value === "") {
-            firstName.nextElementSibling.textContent = "Veuillez entrer votre prénom.";
-        } else if (!firstName.value.match(list)) {
-            firstName.nextElementSibling.textContent = "Veuillez entrer un prénom valide.";
-        }
-        if (lastName.value === "") {
-            lastName.nextElementSibling.textContent = "Veuillez entrer votre nom.";
-        } else if (!lastName.value.match(list)) {
-            lastName.nextElementSibling.textContent = "Veuillez entrer un nom valide.";
-        }
-        if (city.value === "") {
-            city.nextElementSibling.textContent = "Veuillez entrer votre ville.";
-        } else if (!city.value.match(list)) {
-            city.nextElementSibling.textContent = "Veuillez entrer une ville valide.";
-        }
-    }
+function checkAllInputs() {
+    return(
+    checkInputs(document.getElementById("firstName"), /^[a-zA-Z]+$/, "prénom", "un prénom") &&
+    checkInputs(document.getElementById("lastName"), /^[a-zA-Z]+$/, "nom", "un nom") &&
+    checkInputs(document.getElementById("city"), /^[a-zA-Z]+$/, "ville", "une ville") &&
+    checkInputs(document.getElementById("address"), /^[a-zA-Z0-9 ]+$/, "adresse", "une adresse") &&
+    checkInputs(document.getElementById("email"), /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/, "email", "un mail"))
 }
 
-//Checks if address is only letters and numbers and if it is not empty
-function isPostalAddress() {
-    let address = document.getElementById("address");
-    let list = /^[a-zA-Z0-9 ]+$/;
-    if (address.value.match(list) && address.value !== "") {
-        return true;
-    } else {
-        //if fields have an error, it will display an error message below the specific field
-        if (address.value === "") {
-            address.nextElementSibling.textContent = "Veuillez entrer votre adresse.";
-        } else if (!address.value.match(list)) {
-            address.nextElementSibling.textContent = "Veuillez entrer une adresse valide.";
+    //onclick on "Commander", stores in localStorage firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
+    document.getElementById("order").addEventListener("click", (event) => {
+        event.preventDefault();
+        if (checkAllInputs()) {
+            let firstName = document.getElementById("firstName").value;
+            let lastName = document.getElementById("lastName").value;
+            let address = document.getElementById("address").value;
+            let city = document.getElementById("city").value;
+            let email = document.getElementById("email").value;
+            let cart = items;
+            let products = [];
+            cart.forEach((item) => {
+                products.push(item.model);
+            });
+            let finalOrder = {
+                contact: {
+                    firstName,
+                    lastName,
+                    address,
+                    city,
+                    email,
+                },
+                products,
+            };
+            localStorage.setItem("contact", JSON.stringify(finalOrder));
+            console.table(finalOrder);
+            window.location.href = "./confirmation.html";
         }
-    }
-}
-
-//Checks if email is valid and if it is not empty
-function isEmailAddress() {
-    let eMail = document.getElementById("email");
-    let list = /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/;
-    if (eMail.value.match(list) && eMail.value !== "") {
-        return true;
-    } else {
-        if (eMail.value === "") {
-            eMail.nextElementSibling.textContent = "Veuillez entrer votre email";
-        } else if (!eMail.value.match(list)) {
-            eMail.nextElementSibling.textContent = "Veuillez entrer un email valide";
-        }
-    }
-}
-
-//onclick on "Commander", stores in a cookie firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
-document.getElementById("order").addEventListener("click", (event) => {
-    event.preventDefault();
-    if (isLetterOnly() && isEmailAddress() && isPostalAddress()) {
-        let firstName = document.getElementById("firstName").value;
-        let lastName = document.getElementById("lastName").value;
-        let address = document.getElementById("address").value;
-        let city = document.getElementById("city").value;
-        let email = document.getElementById("email").value;
-        let cart = items;
-        let products = [];
-        cart.forEach((item) => {
-            products.push(item.model);
-        });
-        let finalOrder = {
-            contact: {
-                firstName,
-                lastName,
-                address,
-                city,
-                email,
-            },
-            products,
-        };
-        localStorage.setItem("contact", JSON.stringify(finalOrder));
-        console.table(finalOrder);
-        window.location.href = "./confirmation.html";
-    }
-});
+    });
