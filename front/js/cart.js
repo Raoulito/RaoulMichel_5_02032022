@@ -81,10 +81,8 @@ for (let item of items) {
 
             updateTotalPrice();
 
-            //Adjusts quantity
             adjustQuantity(qtySelect);
 
-            //Deletes item from cart
             deleteArticle(deleteButton);
         });
 }
@@ -105,6 +103,7 @@ function updateTotalPrice() {
     document.getElementById("totalPrice").textContent = `${totalPrice}`;
 }
 
+//Checks user inputs
 function checkInputs(input, regex, info, info2) {
     if (input.value.match(regex) && input.value !== "") {
         return true;
@@ -123,35 +122,37 @@ function checkAllInputs() {
     return checkInputs(document.getElementById("firstName"), /^[a-zA-Z]+$/, "prénom", "un prénom") && checkInputs(document.getElementById("lastName"), /^[a-zA-Z]+$/, "nom", "un nom") && checkInputs(document.getElementById("city"), /^[a-zA-Z]+$/, "ville", "une ville") && checkInputs(document.getElementById("address"), /^[a-zA-Z0-9 ]+$/, "adresse", "une adresse") && checkInputs(document.getElementById("email"), /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/, "email", "un mail");
 }
 
-//onclick on "Commander", stores in localStorage firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
-document.getElementById("order").addEventListener("click", (event) => {
-    event.preventDefault();
-    if (checkAllInputs()) {
-        let firstName = document.getElementById("firstName").value;
-        let lastName = document.getElementById("lastName").value;
-        let address = document.getElementById("address").value;
-        let city = document.getElementById("city").value;
-        let email = document.getElementById("email").value;
-        let cart = items;
-        let products = [];
-        cart.forEach((item) => {
-            products.push(item.model);
-        });
-        let finalOrder = {
-            contact: {
-                firstName,
-                lastName,
-                address,
-                city,
-                email,
-            },
-            products,
-        };
-        localStorage.setItem("contact", JSON.stringify(finalOrder));
-        console.table(finalOrder);
-        window.location.href = "./confirmation.html";
-    }
-});
+//onclick , stores in localStorage firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation page
+function confirmOrder() {
+    document.getElementById("order").addEventListener("click", (event) => {
+        event.preventDefault();
+        if (checkAllInputs()) {
+            let firstName = document.getElementById("firstName").value;
+            let lastName = document.getElementById("lastName").value;
+            let address = document.getElementById("address").value;
+            let city = document.getElementById("city").value;
+            let email = document.getElementById("email").value;
+            let cart = items;
+            let products = [];
+            cart.forEach((item) => {
+                products.push(item.model);
+            });
+            let finalOrder = {
+                contact: {
+                    firstName,
+                    lastName,
+                    address,
+                    city,
+                    email,
+                },
+                products,
+            };
+            localStorage.setItem("contact", JSON.stringify(finalOrder));
+            console.table(finalOrder);
+            window.location.href = "./confirmation.html";
+        }
+    });
+}
 
 //Deletes item from cart
 function deleteArticle(element) {
@@ -171,6 +172,7 @@ function deleteArticle(element) {
     });
 }
 
+//Adjusts quantity
 function adjustQuantity(element) {
     element.addEventListener("change", (event) => {
         let product = event.target.parentElement.parentElement.parentElement.parentElement.parentElement;

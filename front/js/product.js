@@ -43,6 +43,7 @@ const details = fetch(`http://localhost:3000/api/products/${id}`)
     });
 
 const button = document.getElementById("addToCart");
+function addToCart() {
 button.addEventListener("click", () => {
     //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY, NAME AND UNIQUEID
     const colorChosen = document.querySelector("#colors").value;
@@ -70,7 +71,6 @@ button.addEventListener("click", () => {
         }
 
         localStorage.setItem("cart", JSON.stringify(cart));
-        console.table(cart);
 
         if (quantityChosen == 1) {
             alert(`${quantityChosen} ${name} ${colorChosen} ajouté au panier.`);
@@ -84,3 +84,4 @@ button.addEventListener("click", () => {
         alert("Veuillez choisir une couleur.");
     }
 });
+}
