@@ -1,5 +1,5 @@
 //Gets datas from local storage
-let items = JSON.parse(localStorage.getItem("cart"));
+var items = JSON.parse(localStorage.getItem("cart"));
 console.table(items);
 //Initiates the counter
 for (let item of items) {
@@ -80,37 +80,12 @@ for (let item of items) {
             divDelete.appendChild(deleteButton);
 
             updateTotalPrice();
-            //Adjusts quantity
-            qtySelect.addEventListener("change", (event) => {
-                let product = event.target.parentElement.parentElement.parentElement.parentElement.parentElement;
-                let productId = product.getAttribute("data-id");
-                let cart = items;
-                cart.forEach((savedProduct) => {
-                    if (savedProduct.model === productId) {
-                        savedProduct.qty = event.target.value;
-                        localStorage.setItem("cart", JSON.stringify(cart));
-                    }
-                });
-                updateTotalPrice();
-            });
-            //Deletes item from cart
-            deleteButton.addEventListener("click", (event) => {
-                let product = event.target.parentElement.parentElement.parentElement.parentElement;
-                product.remove();
-                let productId = product.getAttribute("data-id");
-                let cart = items;
-                cart.forEach((savedProduct) => {
-                    if (savedProduct.model === productId) {
-                        var filtered = cart.filter(function (value) {
-                            return value != savedProduct;
-                        });
-                        cart = filtered;
-                        localStorage.setItem("cart", JSON.stringify(cart));
-                    }
-                });
 
-                updateTotalPrice();
-            });
+            //Adjusts quantity
+            adjustQuantity(qtySelect);
+
+            //Deletes item from cart
+            deleteArticle(deleteButton);
         });
 }
 
@@ -122,8 +97,6 @@ function updateTotalPrice() {
     allCartItems.forEach((cartItem) => {
         let productQty = Number(cartItem.children[1].children[1].children[0].firstElementChild.firstElementChild.value);
         let productPrice = Number(cartItem.children[1].firstElementChild.lastElementChild.innerHTML.slice(0, -1));
-        console.log(productQty);
-        console.log(productPrice);
         totalQuantity += productQty;
         let productTotalPrice = productPrice * productQty;
         totalPrice += productTotalPrice;
@@ -135,52 +108,81 @@ function updateTotalPrice() {
 function checkInputs(input, regex, info, info2) {
     if (input.value.match(regex) && input.value !== "") {
         return true;
-    } 
-        //if fields have an error or empty, it will display an error message below the specific field
-        if (input.value === "") {
-            input.nextElementSibling.textContent = `Veuillez entrer votre ${info}.`;
-        } else if (!input.value.match(regex)) {
-            input.nextElementSibling.textContent = `Veuillez entrer ${info2} valide.`;
-        }
-        return false
+    }
+    //if fields have an error or empty, it will display an error message below the specific field
+    if (input.value === "") {
+        input.nextElementSibling.textContent = `Veuillez entrer votre ${info}.`;
+    } else if (!input.value.match(regex)) {
+        input.nextElementSibling.textContent = `Veuillez entrer ${info2} valide.`;
+    }
+    return false;
 }
 
 //Checks if lastName and firstName and city inputs are letters only and if they are not empty
 function checkAllInputs() {
-    return(
-    checkInputs(document.getElementById("firstName"), /^[a-zA-Z]+$/, "prénom", "un prénom") &&
-    checkInputs(document.getElementById("lastName"), /^[a-zA-Z]+$/, "nom", "un nom") &&
-    checkInputs(document.getElementById("city"), /^[a-zA-Z]+$/, "ville", "une ville") &&
-    checkInputs(document.getElementById("address"), /^[a-zA-Z0-9 ]+$/, "adresse", "une adresse") &&
-    checkInputs(document.getElementById("email"), /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/, "email", "un mail"))
+    return checkInputs(document.getElementById("firstName"), /^[a-zA-Z]+$/, "prénom", "un prénom") && checkInputs(document.getElementById("lastName"), /^[a-zA-Z]+$/, "nom", "un nom") && checkInputs(document.getElementById("city"), /^[a-zA-Z]+$/, "ville", "une ville") && checkInputs(document.getElementById("address"), /^[a-zA-Z0-9 ]+$/, "adresse", "une adresse") && checkInputs(document.getElementById("email"), /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/, "email", "un mail");
 }
 
-    //onclick on "Commander", stores in localStorage firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
-    document.getElementById("order").addEventListener("click", (event) => {
-        event.preventDefault();
-        if (checkAllInputs()) {
-            let firstName = document.getElementById("firstName").value;
-            let lastName = document.getElementById("lastName").value;
-            let address = document.getElementById("address").value;
-            let city = document.getElementById("city").value;
-            let email = document.getElementById("email").value;
-            let cart = items;
-            let products = [];
-            cart.forEach((item) => {
-                products.push(item.model);
-            });
-            let finalOrder = {
-                contact: {
-                    firstName,
-                    lastName,
-                    address,
-                    city,
-                    email,
-                },
-                products,
-            };
-            localStorage.setItem("contact", JSON.stringify(finalOrder));
-            console.table(finalOrder);
-            window.location.href = "./confirmation.html";
+//onclick on "Commander", stores in localStorage firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation.html
+document.getElementById("order").addEventListener("click", (event) => {
+    event.preventDefault();
+    if (checkAllInputs()) {
+        let firstName = document.getElementById("firstName").value;
+        let lastName = document.getElementById("lastName").value;
+        let address = document.getElementById("address").value;
+        let city = document.getElementById("city").value;
+        let email = document.getElementById("email").value;
+        let cart = items;
+        let products = [];
+        cart.forEach((item) => {
+            products.push(item.model);
+        });
+        let finalOrder = {
+            contact: {
+                firstName,
+                lastName,
+                address,
+                city,
+                email,
+            },
+            products,
+        };
+        localStorage.setItem("contact", JSON.stringify(finalOrder));
+        console.table(finalOrder);
+        window.location.href = "./confirmation.html";
+    }
+});
+
+//Deletes item from cart
+function deleteArticle(element) {
+    element.addEventListener("click", (event) => {
+        let product = event.target.parentElement.parentElement.parentElement.parentElement;
+        product.remove();
+        let productId = product.getAttribute("data-id");
+        let productColor = product.getAttribute("data-color");
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].uId === productColor.concat("", productId)) {
+                items.splice(i, 1);
+                localStorage.setItem("cart", JSON.stringify(items));
+            }
         }
+        updateTotalPrice();
+        console.table(items);
     });
+}
+
+function adjustQuantity(element) {
+    element.addEventListener("change", (event) => {
+        let product = event.target.parentElement.parentElement.parentElement.parentElement.parentElement;
+        let productId = product.getAttribute("data-id");
+        let productColor = product.getAttribute("data-color");
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].uId === productColor.concat("", productId)) {
+                items[i].qty = event.target.value;
+                localStorage.setItem("cart", JSON.stringify(items));
+            }
+        }
+        updateTotalPrice();
+        console.table(items);
+    });
+}
