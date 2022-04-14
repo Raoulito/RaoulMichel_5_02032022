@@ -1,7 +1,7 @@
 //Creates a "contact" object with the datas from the cookie
 let contact = JSON.parse(localStorage.getItem("contact"));
 
-//POST contact to the server and wait for orderId response
+//POST "contact" to the server and wait for orderId response
 fetch("http://localhost:3000/api/products/order", {
     method: "POST",
     headers: {
@@ -13,11 +13,10 @@ fetch("http://localhost:3000/api/products/order", {
     .then((order) => {
         console.log(order);
         document.getElementById("orderId").textContent = `${order.orderId}`;
-    }
-    )
+    })
     .catch((error) => {
-        console.log(error)
+        console.log(error);
         alert("Erreur technique");
-});
+    });
 //Clears localStorage
 window.localStorage.clear();

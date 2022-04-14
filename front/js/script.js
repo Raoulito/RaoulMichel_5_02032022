@@ -35,5 +35,5 @@ fetch("http://localhost:3000/api/products")
     //RETURNS ALERT IF API URL IS DOWN OR NOT REACHABLE
     .catch((error) => {
         console.error(error);
-        alert('Erreur technique');
+        alert("Erreur technique");
     });

@@ -122,7 +122,7 @@ function checkAllInputs() {
     return checkInputs(document.getElementById("firstName"), /^[a-zA-Z]+$/, "prénom", "un prénom") && checkInputs(document.getElementById("lastName"), /^[a-zA-Z]+$/, "nom", "un nom") && checkInputs(document.getElementById("city"), /^[a-zA-Z]+$/, "ville", "une ville") && checkInputs(document.getElementById("address"), /^[a-zA-Z0-9 ]+$/, "adresse", "une adresse") && checkInputs(document.getElementById("email"), /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/, "email", "un mail");
 }
 
-//onclick , stores in localStorage firstName, lastName, address, city, email and an array of strings of product-id and loads confirmation page
+//onclick , stores in localStorage user's data + an array of strings of product-id and loads confirmation page
 function confirmOrder() {
     document.getElementById("order").addEventListener("click", (event) => {
         event.preventDefault();
@@ -162,6 +162,7 @@ function deleteArticle(element) {
         let productId = product.getAttribute("data-id");
         let productColor = product.getAttribute("data-color");
         for (let i = 0; i < items.length; i++) {
+            //Compares product-id and product-color with items in cart and deletes it
             if (items[i].uId === productColor.concat("", productId)) {
                 items.splice(i, 1);
                 localStorage.setItem("cart", JSON.stringify(items));
@@ -179,6 +180,7 @@ function adjustQuantity(element) {
         let productId = product.getAttribute("data-id");
         let productColor = product.getAttribute("data-color");
         for (let i = 0; i < items.length; i++) {
+            //Compares the product-id and product-color with the items in the cart  and updates the quantity
             if (items[i].uId === productColor.concat("", productId)) {
                 items[i].qty = event.target.value;
                 localStorage.setItem("cart", JSON.stringify(items));
