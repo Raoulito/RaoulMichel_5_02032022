@@ -123,36 +123,34 @@ function checkAllInputs() {
 }
 
 //onclick , stores in localStorage user's data + an array of strings of product-id and loads confirmation page
-function confirmOrder() {
-    document.getElementById("order").addEventListener("click", (event) => {
-        event.preventDefault();
-        if (checkAllInputs()) {
-            let firstName = document.getElementById("firstName").value;
-            let lastName = document.getElementById("lastName").value;
-            let address = document.getElementById("address").value;
-            let city = document.getElementById("city").value;
-            let email = document.getElementById("email").value;
-            let cart = items;
-            let products = [];
-            cart.forEach((item) => {
-                products.push(item.model);
-            });
-            let finalOrder = {
-                contact: {
-                    firstName,
-                    lastName,
-                    address,
-                    city,
-                    email,
-                },
-                products,
-            };
-            localStorage.setItem("contact", JSON.stringify(finalOrder));
-            console.table(finalOrder);
-            window.location.href = "./confirmation.html";
-        }
-    });
-}
+document.getElementById("order").addEventListener("click", (event) => {
+    event.preventDefault();
+    if (checkAllInputs()) {
+        let firstName = document.getElementById("firstName").value;
+        let lastName = document.getElementById("lastName").value;
+        let address = document.getElementById("address").value;
+        let city = document.getElementById("city").value;
+        let email = document.getElementById("email").value;
+        let cart = items;
+        let products = [];
+        cart.forEach((item) => {
+            products.push(item.model);
+        });
+        let finalOrder = {
+            contact: {
+                firstName,
+                lastName,
+                address,
+                city,
+                email,
+            },
+            products,
+        };
+        localStorage.setItem("contact", JSON.stringify(finalOrder));
+        console.table(finalOrder);
+        window.location.href = "./confirmation.html";
+    }
+});
 
 //Deletes item from cart
 function deleteArticle(element) {
