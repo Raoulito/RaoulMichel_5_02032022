@@ -1,5 +1,8 @@
-//EXTRACTS _id FROM THE URL (ALL SYMBOLS AFTER THE = SYMBOL IN URL)
-const id = window.location.href.substring(window.location.href.lastIndexOf("=") + 1);
+//Gets _id using URLSearchParams V1 was //const id = window.location.href.substring(window.location.href.lastIndexOf("=") + 1); but this is not really adaptative
+const params = new URLSearchParams(window.location.search);
+//Gets _id using URL
+const id = params.get("id");
+
 //CHECKS _id
 console.log(id);
 //FETCHES THE DATA FOR THE RELATED id IN details
@@ -42,45 +45,44 @@ const details = fetch(`http://localhost:3000/api/products/${id}`)
         alert("Erreur technique");
     });
 
-    const button = document.getElementById("addToCart");
-    button.addEventListener("click", () => {
-        //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY, NAME AND UNIQUEID
-        const colorChosen = document.querySelector("#colors").value;
-        const quantityChosen = parseInt(document.querySelector("#quantity").value);
-        const name = document.title;
-        const uniqueId = colorChosen.concat("", id);
+const button = document.getElementById("addToCart");
+button.addEventListener("click", () => {
+    //SETS VARIABLES FOR CHOSEN COLOR & QUANTITY, NAME AND UNIQUEID
+    const colorChosen = document.querySelector("#colors").value;
+    const quantityChosen = parseInt(document.querySelector("#quantity").value);
+    const name = document.title;
+    const uniqueId = colorChosen.concat("", id);
 
-        //CHECKS IF QTY IS NOT 0 AND IF COLOR IS SET
-        if (quantityChosen > 0 && colorChosen != "") {
-            //SETS NEEDED DATAS FOR ADDING A NEW ITEM TO THE CART
-            let newItem = { color: colorChosen, qty: quantityChosen, model: id, uId: uniqueId };
-            //CHECKS CART CONTENT
-            let cart = JSON.parse(localStorage.getItem("cart"));
+    //CHECKS IF QTY IS NOT 0 AND IF COLOR IS SET
+    if (quantityChosen > 0 && colorChosen != "") {
+        //SETS NEEDED DATAS FOR ADDING A NEW ITEM TO THE CART
+        let newItem = { color: colorChosen, qty: quantityChosen, model: id, uId: uniqueId };
+        //CHECKS CART CONTENT
+        let cart = JSON.parse(localStorage.getItem("cart"));
 
-            //IF CART DOESN'T EXISTS, CREATES AN ARRAY
-            if (cart === null) {
-                cart = [];
-            }
-            //CHECKS IF ITEM ALREADY EXISTS IN CART
-            let itemExist = cart.find((item) => item.uId === newItem.uId);
-            if (itemExist === null || itemExist === undefined) {
-                cart.push(newItem);
-            } else {
-                itemExist.qty += newItem.qty;
-            }
-            //SETS CART TO LOCALSTORAGE
-            localStorage.setItem("cart", JSON.stringify(cart));
-            //CONFIRMATION MESSAGE
-            if (quantityChosen == 1) {
-                alert(`${quantityChosen} ${name} ${colorChosen} ajouté au panier.`);
-            } else {
-                alert(`${quantityChosen} ${name} ${colorChosen} ajoutés au panier.`);
-            }
+        //IF CART DOESN'T EXISTS, CREATES AN ARRAY
+        if (cart === null) {
+            cart = [];
         }
-
-        //IF NO COLOR SELECTED, ALERT
-        else if (colorChosen === "") {
-            alert("Veuillez choisir une couleur.");
+        //CHECKS IF ITEM ALREADY EXISTS IN CART
+        let itemExist = cart.find((item) => item.uId === newItem.uId);
+        if (itemExist === null || itemExist === undefined) {
+            cart.push(newItem);
+        } else {
+            itemExist.qty += newItem.qty;
         }
-    });
+        //SETS CART TO LOCALSTORAGE
+        localStorage.setItem("cart", JSON.stringify(cart));
+        //CONFIRMATION MESSAGE
+        if (quantityChosen == 1) {
+            alert(`${quantityChosen} ${name} ${colorChosen} ajouté au panier.`);
+        } else {
+            alert(`${quantityChosen} ${name} ${colorChosen} ajoutés au panier.`);
+        }
+    }
 
+    //IF NO COLOR SELECTED, ALERT
+    else if (colorChosen === "") {
+        alert("Veuillez choisir une couleur.");
+    }
+});
