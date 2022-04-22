@@ -1,4 +1,4 @@
-//Gets _id using URLSearchParams V1 was //const id = window.location.href.substring(window.location.href.lastIndexOf("=") + 1); but this is not really adaptative
+//Gets _id using URLSearchParams
 const params = new URLSearchParams(window.location.search);
 //Gets _id using URL
 const id = params.get("id");
